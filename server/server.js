@@ -11,19 +11,20 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Middleware — allow requests from local dev and Vercel deployment
-const allowedOrigins = [
-  'http://localhost:3000',
-  process.env.CLIENT_URL, // set this to your Vercel URL in Render env vars
-].filter(Boolean);
-
+// Middleware — allow all vercel.app subdomains + localhost
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (curl, Postman, mobile apps)
+    // Allow requests with no origin (Postman, server-to-server)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.some(o => origin.startsWith(o))) return callback(null, true);
+    // Allow localhost dev
+    if (origin.startsWith('http://localhost')) return callback(null, true);
+    // Allow any vercel.app subdomain
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    // Allow exact CLIENT_URL if set
+    if (process.env.CLIENT_URL && origin === process.env.CLIENT_URL) return callback(null, true);
     callback(new Error(`CORS blocked: ${origin}`));
   },
+  credentials: true,
 }));
 app.use(express.json());
 
