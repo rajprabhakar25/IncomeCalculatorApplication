@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const BASE_URL = '/api/cases';
+// In development: proxy in package.json forwards /api → localhost:5000
+// In production (Vercel): REACT_APP_API_URL must be set to your Render URL
+const BASE_URL = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}/api/cases`
+  : '/api/cases';
 
 export const caseApi = {
   // Get all cases (with optional search/filter query params)
