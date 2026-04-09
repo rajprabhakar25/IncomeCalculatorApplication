@@ -146,4 +146,10 @@ income-assessment-app/
 
 ## AI Tools Used
 
-This project was built with the assistance of **Claude (Anthropic)** — used for architecture planning, code generation, business logic implementation based on Excel calculation sheets, and debugging. All code was reviewed and tested before submission.
+This project was built with the assistance of **Claude AI (claude.ai)** and **Claude Code (Anthropic's AI-powered CLI)**. Here is how I used them:
+
+I started by describing the full assignment to **Claude AI (claude.ai)** — the three-sheet Excel workflow, the five business types, and the loan eligibility formulas. I asked it to generate a detailed, structured prompt covering the architecture, data models, calculation logic, and UI requirements. Claude AI helped me think through the domain (turnover methods, IIR, gross margin per business type) and produce a comprehensive specification prompt.
+
+I then fed that prompt to **Claude Code** — Anthropic's CLI tool that can read files, write code, and run terminal commands — and asked it to develop the application phase by phase: first the backend (Express + MongoDB models and routes), then the React frontend module by module (Case management → Turnover → P&L → Eligibility → Summary). After each phase I reviewed the code, verified the calculations against the sample data, and course-corrected where needed. Once the application was working locally, I asked Claude Code to do an end-to-end test pass — checking all five business types, validating every formula, and fixing edge cases it found.
+
+For deployment, I used **Vercel** (frontend) and **Render** (backend/API), both of which I had experience with from previous personal projects, so I was able to configure them quickly without AI assistance.
