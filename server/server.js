@@ -36,6 +36,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Income Assessment API is running' });
 });
 
+// 404 handler — unknown routes
+app.use((req, res) => {
+  res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
+});
+
+// Global error handler — catches any unhandled errors
+// Express requires 4-parameter signature for error handlers — _req and _next are intentional
+// eslint-disable-next-line no-unused-vars
+app.use((err, _req, res, _next) => {
+  console.error('Unhandled error:', err.message);
+  const status = err.status || 500;
+  res.status(status).json({ message: err.message || 'Internal server error' });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

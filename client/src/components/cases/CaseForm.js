@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { caseApi } from '../../api/caseApi';
 import { BUSINESS_TYPE_OPTIONS, BUSINESS_CONFIGS } from '../../constants/businessConfig';
+import { SAMPLE_DATA } from '../../constants/sampleData';
 
 const defaultForm = {
   customerName: '',
@@ -54,13 +55,18 @@ function CaseForm() {
       if (isEdit) {
         saved = await caseApi.update(id, form);
       } else {
-        // Pre-populate P&L expenses from business config defaults
+        // Pre-populate turnover items, P&L expenses, and eligibility defaults from sample data
         const config = BUSINESS_CONFIGS[form.businessType];
+        const sample = SAMPLE_DATA[form.businessType];
         const pnlExpenses = config ? config.defaultExpenses.map(e => ({ ...e })) : [];
         const payload = {
           ...form,
-          turnover: { items: [], grossMarginPercent: config?.defaultGrossMargin || 0 },
+          turnover: {
+            items: sample?.turnoverItems ? sample.turnoverItems.map(i => ({ ...i })) : [],
+            grossMarginPercent: config?.defaultGrossMargin || 0,
+          },
           pnl: { expenses: pnlExpenses },
+          eligibility: sample?.eligibility ? { ...sample.eligibility } : {},
         };
         saved = await caseApi.create(payload);
       }

@@ -90,13 +90,12 @@ export function calcPnL(grossProfit, expenses) {
  */
 export function calculateEMIPerLakh(annualRatePercent, tenureYears) {
   const monthlyRate = annualRatePercent / 100 / 12;
-  const totalMonths = tenureYears * 12;
+  const totalMonths = Math.max(1, tenureYears) * 12;
   const principal = 100000;
   if (monthlyRate === 0) return principal / totalMonths;
-  const emi =
-    (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
-    (Math.pow(1 + monthlyRate, totalMonths) - 1);
-  return emi;
+  const factor = Math.pow(1 + monthlyRate, totalMonths);
+  const emi = (principal * monthlyRate * factor) / (factor - 1);
+  return isFinite(emi) ? emi : 0;
 }
 
 /**
@@ -104,12 +103,11 @@ export function calculateEMIPerLakh(annualRatePercent, tenureYears) {
  */
 export function calculateEMI(principal, annualRatePercent, tenureYears) {
   const monthlyRate = annualRatePercent / 100 / 12;
-  const totalMonths = tenureYears * 12;
+  const totalMonths = Math.max(1, tenureYears) * 12;
   if (monthlyRate === 0) return principal / totalMonths;
-  const emi =
-    (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
-    (Math.pow(1 + monthlyRate, totalMonths) - 1);
-  return emi;
+  const factor = Math.pow(1 + monthlyRate, totalMonths);
+  const emi = (principal * monthlyRate * factor) / (factor - 1);
+  return isFinite(emi) ? emi : 0;
 }
 
 /**

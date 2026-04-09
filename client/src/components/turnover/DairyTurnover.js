@@ -23,11 +23,11 @@ function DairyTurnover({ caseData, onSave }) {
     if (saved.items && saved.items.length >= 2) {
       return saved.items.slice(0, 2).map((item, i) => ({
         session: SESSIONS[i],
-        milkPerDay: item.milkPerDay || '',
-        societyQty: item.societyQty || '',
-        societyRate: item.societyRate || '',
-        individualQty: item.individualQty || '',
-        individualRate: item.individualRate || '',
+        milkPerDay:     item.milkPerDay     ?? '',
+        societyQty:     item.societyQty     ?? '',
+        societyRate:    item.societyRate    ?? '',
+        individualQty:  item.individualQty  ?? '',
+        individualRate: item.individualRate ?? '',
       }));
     }
     return SESSIONS.map(s => defaultRow(s));
