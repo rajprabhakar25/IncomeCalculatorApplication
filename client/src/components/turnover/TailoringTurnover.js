@@ -12,9 +12,9 @@ function TailoringTurnover({ caseData, onSave }) {
   const [items, setItems] = useState(
     saved.items && saved.items.length > 0
       ? saved.items.map(i => ({
-          itemName: i.itemName || '',
-          monthlyQty: i.monthlyQty || '',
-          ratePerPiece: i.ratePerPiece || '',
+          itemName:    i.itemName    ?? '',
+          monthlyQty:  i.monthlyQty  ?? '',
+          ratePerPiece: i.ratePerPiece ?? '',
         }))
       : [newRow()]
   );

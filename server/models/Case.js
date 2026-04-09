@@ -9,6 +9,7 @@ const TurnoverItemSchema = new mongoose.Schema({
   unitsPerDay: Number,
   milkLitres: Number,       // Tea Shop
   cupsPerLitre: Number,     // Tea Shop
+  milkPerDay: Number,        // Dairy (litres per session)
   societyQty: Number,       // Dairy
   societyRate: Number,      // Dairy
   individualQty: Number,    // Dairy

@@ -13,9 +13,15 @@ const STATUS_OPTIONS = [
 
 const BT_OPTIONS = [{ value: 'all', label: 'All Types' }, ...BUSINESS_TYPE_OPTIONS];
 
+const STATUS_LABELS = { draft: 'Draft', 'in-progress': 'In Progress', completed: 'Completed' };
+const STATUS_CLASSES = { draft: 'badge-draft', 'in-progress': 'badge-in-progress', completed: 'badge-completed' };
+
 function BadgeStatus({ status }) {
-  const map = { draft: 'badge-draft', 'in-progress': 'badge-in-progress', completed: 'badge-completed' };
-  return <span className={`badge ${map[status] || 'badge-draft'}`}>{status}</span>;
+  return (
+    <span className={`badge ${STATUS_CLASSES[status] || 'badge-draft'}`}>
+      {STATUS_LABELS[status] || status}
+    </span>
+  );
 }
 
 function CaseList() {

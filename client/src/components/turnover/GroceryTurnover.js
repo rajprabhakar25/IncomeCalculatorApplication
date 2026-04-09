@@ -64,7 +64,7 @@ function GroceryTurnover({ caseData, onSave }) {
               <tr>
                 <th style={{ width: 40 }}>S.No</th>
                 <th>Item Name</th>
-                <th>Sales/Day (Kg/Pcs)</th>
+                <th>Qty/Day (Kg/Pcs)</th>
                 <th>Sale Price (₹)</th>
                 <th>Per Day Sales (₹)</th>
                 <th>Per Month Sales (₹)</th>

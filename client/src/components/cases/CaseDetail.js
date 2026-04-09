@@ -6,30 +6,41 @@ import TurnoverModule from '../turnover/TurnoverModule';
 import PnLModule from '../pnl/PnLModule';
 import EligibilityModule from '../eligibility/EligibilityModule';
 import SummaryReport from '../summary/SummaryReport';
+import { useToast } from '../common/ToastContext';
 
 const TABS = ['Turnover', 'P&L', 'Eligibility', 'Summary'];
 
+const STATUS_LABELS  = { draft: 'Draft', 'in-progress': 'In Progress', completed: 'Completed' };
+const STATUS_CLASSES = { draft: 'badge-draft', 'in-progress': 'badge-in-progress', completed: 'badge-completed' };
+
+// Tab to navigate to after each section is saved successfully
+const NEXT_TAB = { turnover: 'P&L', pnl: 'Eligibility', eligibility: 'Summary' };
+
 function BadgeStatus({ status }) {
-  const map = { draft: 'badge-draft', 'in-progress': 'badge-in-progress', completed: 'badge-completed' };
-  return <span className={`badge ${map[status] || 'badge-draft'}`}>{status}</span>;
+  return (
+    <span className={`badge ${STATUS_CLASSES[status] || 'badge-draft'}`}>
+      {STATUS_LABELS[status] || status}
+    </span>
+  );
 }
 
 function CaseDetail() {
   const { id } = useParams();
-  const [caseData, setCaseData] = useState(null);
+  const { addToast } = useToast();
+
+  const [caseData, setCaseData]   = useState(null);
   const [activeTab, setActiveTab] = useState('Turnover');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [saveMsg, setSaveMsg] = useState('');
+  const [loading, setLoading]     = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   const loadCase = useCallback(async () => {
     try {
       setLoading(true);
       const res = await caseApi.getById(id);
       setCaseData(res.data);
-      setError('');
+      setLoadError('');
     } catch {
-      setError('Failed to load case.');
+      setLoadError('Failed to load case. Please refresh the page.');
     } finally {
       setLoading(false);
     }
@@ -39,7 +50,7 @@ function CaseDetail() {
     loadCase();
   }, [loadCase]);
 
-  // Persist section updates to the server
+  // Persist section updates to the server, then advance to the next tab
   const saveSection = async (section, data) => {
     try {
       const update = { [section]: data };
@@ -52,15 +63,18 @@ function CaseDetail() {
       }
       const res = await caseApi.update(id, update);
       setCaseData(res.data);
-      setSaveMsg('Saved successfully!');
-      setTimeout(() => setSaveMsg(''), 2500);
-    } catch {
-      alert('Failed to save. Please try again.');
+      addToast('Saved successfully!', 'success');
+      // Navigate to the next logical tab
+      if (NEXT_TAB[section]) {
+        setActiveTab(NEXT_TAB[section]);
+      }
+    } catch (err) {
+      addToast(err.response?.data?.message || 'Failed to save. Please try again.', 'error');
     }
   };
 
-  if (loading) return <div className="loading">Loading case...</div>;
-  if (error) return <div className="alert alert-error">{error}</div>;
+  if (loading)   return <div className="loading">Loading case...</div>;
+  if (loadError) return <div className="alert alert-error">{loadError}</div>;
   if (!caseData) return null;
 
   const config = BUSINESS_CONFIGS[caseData.businessType] || {};
@@ -82,8 +96,6 @@ function CaseDetail() {
           <Link to="/" className="btn btn-secondary btn-sm">← All Cases</Link>
         </div>
       </div>
-
-      {saveMsg && <div className="alert alert-success">{saveMsg}</div>}
 
       {/* Tabs */}
       <div className="tabs no-print">

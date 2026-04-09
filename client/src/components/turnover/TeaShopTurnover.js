@@ -20,12 +20,12 @@ function TeaShopTurnover({ caseData, onSave }) {
   const [items, setItems] = useState(
     saved.items && saved.items.length > 0
       ? saved.items.map(i => ({
-          itemType: (i.milkLitres > 0 || Number(i.milkLitres) > 0) ? 'tea' : 'snack',
-          itemName: i.itemName || '',
-          milkLitres: i.milkLitres || '',
-          cupsPerLitre: i.cupsPerLitre || '',
-          qtyPerDay: i.qtyPerDay || '',
-          rate: i.rate || '',
+          itemType:     Number(i.milkLitres) > 0 ? 'tea' : 'snack',
+          itemName:     i.itemName     ?? '',
+          milkLitres:   i.milkLitres   ?? '',
+          cupsPerLitre: i.cupsPerLitre ?? '',
+          qtyPerDay:    i.qtyPerDay    ?? '',
+          rate:         i.rate         ?? '',
         }))
       : [newRow('tea')]
   );
