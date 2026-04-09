@@ -25,10 +25,23 @@ export function formatLakhs(amount) {
 }
 
 /**
+ * Format a number as Indian Rupees with 2 decimal places.
+ * Used for precise monetary values like EMI amounts.
+ * e.g. 1706.42 → "₹1,706.42"
+ */
+export function formatINRDecimal(amount) {
+  if (amount === null || amount === undefined || isNaN(amount) || !isFinite(amount)) return '₹0.00';
+  return '₹' + Number(amount).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+/**
  * Format a decimal percentage value.
  * e.g. 16.5 → "16.50%"
  */
 export function formatPercent(value, decimals = 2) {
-  if (value === null || value === undefined || isNaN(value)) return '0%';
+  if (value === null || value === undefined || isNaN(value) || !isFinite(value)) return '—';
   return Number(value).toFixed(decimals) + '%';
 }

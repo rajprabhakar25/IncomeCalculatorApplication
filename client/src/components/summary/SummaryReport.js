@@ -1,7 +1,9 @@
 import React from 'react';
-import { formatINR, formatLakhs, formatPercent } from '../../utils/formatCurrency';
+import { formatINR, formatINRDecimal, formatLakhs, formatPercent } from '../../utils/formatCurrency';
 import { BUSINESS_CONFIGS } from '../../constants/businessConfig';
 import WarningBadge from '../common/WarningBadge';
+
+const STATUS_LABELS = { draft: 'Draft', 'in-progress': 'In Progress', completed: 'Completed' };
 
 function SummaryReport({ caseData }) {
   const config = BUSINESS_CONFIGS[caseData.businessType] || {};
@@ -9,10 +11,11 @@ function SummaryReport({ caseData }) {
   const pnl = caseData.pnl || {};
   const elig = caseData.eligibility || {};
 
-  const iirWarning = elig.iirCombined > 50
-    ? `IIR (Combined) is ${formatPercent(elig.iirCombined)} — exceeds 50% threshold`
-    : elig.iirCurrent > 50
-    ? `IIR (Current) is ${formatPercent(elig.iirCurrent)} — exceeds 50% threshold`
+  const iirLimit = elig.iirThreshold || 50;
+  const iirWarning = elig.iirCombined > iirLimit
+    ? `IIR (Combined) is ${formatPercent(elig.iirCombined)} — exceeds ${iirLimit}% threshold`
+    : elig.iirCurrent > iirLimit
+    ? `IIR (Current) is ${formatPercent(elig.iirCurrent)} — exceeds ${iirLimit}% threshold`
     : null;
 
   const handlePrint = () => window.print();
@@ -51,9 +54,9 @@ function SummaryReport({ caseData }) {
             <table style={{ width: '100%', fontSize: 14 }}>
               <tbody>
                 {[
-                  ['Assessment Date', new Date(caseData.assessmentDate).toLocaleDateString('en-IN')],
-                  ['Status', caseData.status],
-                  ['Created', new Date(caseData.createdAt).toLocaleDateString('en-IN')],
+                  ['Assessment Date', caseData.assessmentDate ? new Date(caseData.assessmentDate).toLocaleDateString('en-IN') : '—'],
+                  ['Status', STATUS_LABELS[caseData.status] || caseData.status],
+                  ['Created', caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString('en-IN') : '—'],
                 ].map(([label, value]) => (
                   <tr key={label}>
                     <td style={{ padding: '5px 0', color: '#6b7280', width: '45%' }}>{label}</td>
@@ -180,7 +183,7 @@ function SummaryReport({ caseData }) {
             </div>
             <div className="totals-row">
               <span>EMI per Lakh</span>
-              <span className="totals-value">{formatINR(Math.round(elig.emiPerLakh || 0))}</span>
+              <span className="totals-value">{formatINRDecimal(elig.emiPerLakh || 0)}</span>
             </div>
           </div>
 
@@ -197,7 +200,7 @@ function SummaryReport({ caseData }) {
             </div>
             <div className="totals-row">
               <span>Final EMI</span>
-              <span className="totals-value">{formatINR(Math.round(elig.finalEMI || 0))}</span>
+              <span className="totals-value">{formatINRDecimal(elig.finalEMI || 0)}</span>
             </div>
             <div className="totals-row">
               <span>Existing EMI</span>
@@ -205,13 +208,13 @@ function SummaryReport({ caseData }) {
             </div>
             <div className="totals-row">
               <span>IIR — Current Loan</span>
-              <span className={elig.iirCurrent > 50 ? 'iir-danger' : 'iir-safe'}>
+              <span className={elig.iirCurrent > iirLimit ? 'iir-danger' : 'iir-safe'}>
                 {formatPercent(elig.iirCurrent || 0)}
               </span>
             </div>
             <div className="totals-row" style={{ fontWeight: 700 }}>
               <span>IIR — Combined</span>
-              <span className={elig.iirCombined > 50 ? 'iir-danger' : 'iir-safe'}>
+              <span className={elig.iirCombined > iirLimit ? 'iir-danger' : 'iir-safe'}>
                 {formatPercent(elig.iirCombined || 0)}
               </span>
             </div>

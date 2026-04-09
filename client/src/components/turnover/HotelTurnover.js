@@ -15,10 +15,10 @@ function HotelTurnover({ caseData, onSave }) {
   const initItems = () => {
     if (saved.items && saved.items.length > 0) {
       return saved.items.map(i => ({
-        session: i.session || 'Breakfast',
-        itemName: i.itemName || '',
-        rate: i.rate || '',
-        unitsPerDay: i.unitsPerDay || '',
+        session:    i.session    ?? 'Breakfast',
+        itemName:   i.itemName   ?? '',
+        rate:       i.rate       ?? '',
+        unitsPerDay: i.unitsPerDay ?? '',
       }));
     }
     return SESSIONS.map(s => newRow(s));

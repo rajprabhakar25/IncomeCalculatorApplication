@@ -1,4 +1,8 @@
+const mongoose = require('mongoose');
 const Case = require('../models/Case');
+
+// Helper — detect invalid ObjectId and return 400 instead of 500
+const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // Create a new case
 const createCase = async (req, res) => {
@@ -42,6 +46,9 @@ const getCases = async (req, res) => {
 // Get a single case by ID
 const getCaseById = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid case ID format' });
+    }
     const found = await Case.findById(req.params.id);
     if (!found) return res.status(404).json({ message: 'Case not found' });
     res.json(found);
@@ -50,12 +57,15 @@ const getCaseById = async (req, res) => {
   }
 };
 
-// Update a case
+// Update a case — use explicit $set to prevent NoSQL operator injection
 const updateCase = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid case ID format' });
+    }
     const updated = await Case.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { $set: req.body },
       { new: true, runValidators: true }
     );
     if (!updated) return res.status(404).json({ message: 'Case not found' });
@@ -68,6 +78,9 @@ const updateCase = async (req, res) => {
 // Delete a case
 const deleteCase = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid case ID format' });
+    }
     const deleted = await Case.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Case not found' });
     res.json({ message: 'Case deleted successfully' });
